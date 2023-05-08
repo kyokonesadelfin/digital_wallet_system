@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Central Wallet System</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="index.js"></script>
+
+</head>
+
+<style>
+    body{
+        background-color: rgb(163, 165, 168);
+    }
+    label {
+        display: inline-block;
+        width: 100px;
+        margin-bottom: 10px;
+    }
+    
+    input[type="number"] {
+        width: 150px;
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+    
+    button {
+        padding: 10px;
+        background-color: #0c1bec;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    
+    #debit-form, #cash-in-form, h1, h2, span, p {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 15px;
+    }
+    
+    input {
+        margin-right: 30px;
+    }
+    
+    button {
+        margin-bottom: 15px;
+    }
+
+    p {
+        font-size: 1.4rem;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-weight: 600;
+        color: #333341;
+        margin-bottom: 20px;
+    }
+    
+    #balance {
+        font-size: 1.4rem;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-weight: 700;
+        color: #0c1bec;
+    }
+    
+    #balance {
+        margin-left: 20px;
+    }
+
+    h1 {
+        color: rgb(1, 24, 129);
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    }
+</style>
+
+<body>
+    <h1>&#36; &#x24; &dollar;
+        Central Wallet System
+        &#36; &#x24; &dollar;
+    </h1>
+    <p>Balance: <span id="balance"></span></p>
+
+    <hr>
+    <h2>Cash-in  </h2>
+    <form id="cash-in-form">
+        <label for="cash-in-amount">Amount:  &dollar;</label>
+        <input type="number" id="cash-in-amount" name="cash-in-amount" required>
+        <br>
+        <button type="submit">Cash In</button>
+    </form>
+    <hr>
+    <h2>Debit  </h2>
+    <form id="debit-form">
+        <label for="debit-amount">Amount:  &dollar;</label>
+        <input type="number" id="debit-amount" name="debit-amount" required>
+        <br>
+        <button type="submit">Debit</button>
+    </form>
+    <script>
+        // Get references to the HTML elements
+        const balanceEl = document.getElementById('balance');
+        const cashInForm = document.getElementById('cash-in-form');
+        const cashInAmountInput = document.getElementById('cash-in-amount');
+        const debitForm = document.getElementById('debit-form');
+        const debitAmountInput = document.getElementById('debit-amount');
+
+        // Define the API URLs
+        const baseUrl = 'http://localhost:3000';
+        const balanceUrl = `${baseUrl}/balance`;
+        const cashInUrl = `${baseUrl}/cash-in`;
+        const debitUrl = `${baseUrl}/debit`;
+
+        // Define a function to fetch the current balance and update the UI
+        async function updateBalance() {
+            try {
+                const response = await axios.get(balanceUrl);
+                const balance = response.data;
+                balanceEl.textContent = balance;
+            } catch (error) {
+                console.error(error);
+                alert('An error occurred while fetching the balance');
+            }
+        }
+
+        // Define a function to handle the cash-in form submission
+        async function handleCashInSubmit(event) {
+            event.preventDefault();
+            const amount = cashInAmountInput.value;
+
+            try {
+                const response = await axios.post(cashInUrl, { amount });
+                const message = response.data;
+                alert(message);
+                cashInAmountInput.value = '';
+                updateBalance();
+            } catch (error) {
+                console.error(error);
+                alert('An error occurred while cashing in');
+            }
+        }
+
+        // Define a function to handle the debit form submission
+        async function handleDebitSubmit(event) {
+            event.preventDefault();
+            const amount = debitAmountInput.value;
+
+            try {
+                const response = await axios.post(debitUrl, { amount });
+                const message = response.data;
+                alert(message);
+                debitAmountInput.value = '';
+                updateBalance();
+            } catch (error) {
+                console.error(error);
+                alert('An error occurred while debiting');
+            }
+        }
+
+        // Attach event listeners to the forms
+        cashInForm.addEventListener('submit', handleCashInSubmit);
+        debitForm.addEventListener('submit', handleDebitSubmit);
+
+        // Fetch the initial balance and update the UI
+        updateBalance();
+
+    </script>
+</body>
+
+</html>
